@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        * {
+            /* border: 1px solid red; */
+            scrollbar-color: #2e2e2e #22222200;
+        }
+
+        body {
+            background: url("{% if cover_image %}{{ cover_image }}{% elif poster_image %}{{ poster_image }}{% endif %}") no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            /* overflow: hidden; */
+
+        }
+
+
+
+
+        .overlay {
+
+
+            background: rgba(0, 0, 0, 0.568);
+        }
+
+
+        .form-select {
+            background-color: transparent !important;
+            color: white !important;
+        }
+
+        .form-select option {
+            background-color: black;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="text-white ">
+    <nav class="navbar bg-transparent navbar-dark bg-dark fixed-top py-2">
+        <div class="container-fluid mx-2">
+            <a class="navbar-brand fw-bold fs-2" href="{% url 'trending_movies' %}"><i
+                    class="fa-solid fa-film me-2"></i>MovieRev</a>
+
+            <div class="dropdown ms-auto d-flex align-items-center gap-3">
+                <a href="{% url 'search_movies'  %}" class="btn text-white fs-4 rounded-pill">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </a>
+
+                <button class="btn text-white fs-3" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasRight" aria-expanded="false">
+                    <i class="fa-solid fa-user"></i>
+                </button>
+
+                <div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasRight"
+                    aria-labelledby="offcanvasRightLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasRightLabel">MovieRev</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        {% if user.username%}
+                        <div>
+                            <div class="d-flex flex-column h-100 justify-content-between">
+                                <div class="d-grid gap-3 px-3">
+
+                                    <a href="" class="btn btn-dark text-start p-3 " data-bs-toggle="collapse"
+                                        data-bs-target="#profile"><i
+                                            class="fa-solid fa-user-circle me-2"></i>Profile</a>
+                                    <div class="collapse mt-2 " id="profile">
+                                        <div class="p-3">
+                                            <h2 class="text-info mb-4">Profile Details</h2>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item bg-dark text-white"><strong>First
+                                                        Name:</strong> {{ user.first_name }}</li>
+                                                <li class="list-group-item bg-dark text-white"><strong>Last
+                                                        Name:</strong> {{ user.last_name }}</li>
+                                                <li class="list-group-item bg-dark text-white">
+                                                    <strong>Email:</strong> {{ user.email }}
+                                                </li>
+                                                <li class="list-group-item bg-dark text-white">
+                                                    <strong>Joined:</strong> {{ user.date_joined|date:"F d, Y" }}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <a class="btn btn-dark text-start p-3" href="{% url 'saved_reviews' %}"><i
+                                            class="fa-solid fa-bookmark me-2"></i> MyList</a>
+                                    <a class="btn btn-dark text-start p-3" href="{% url 'user_reviews' %}"><i
+                                            class="fa-solid fa-pen-to-square me-2"></i> Review's</a>
+                                    <a class="btn btn-dark text-start p-3" href="{% url 'logout' %}"><i
+                                            class="fa-solid fa-sign-out me-2"></i> Logout</a>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div>
+                                <div class="d-flex flex-column h-100 justify-content-between">
+                                    <div class="d-grid gap-3 px-3">
+
+
+                                        <a class="btn btn-dark text-start p-3" href="{% url 'login' %}"><i
+                                                class="fa-solid fa-sign-in me-2"></i> login</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </nav>
+
+
+    <div class="overlay ">
+        <div class="container-fluid  ">
+            <div class="row min-vh-100    ">
+                <!-- lef side -->
+                <div class="col-md-7  d-flex align-items-center ps-md-5 px-4 py-5 ">
+                    <div style="max-width: 700px;">
+                        <h1 class="fw-bold display-4 ">{{ title }}</h1>
+                        <div class="d-flex gap-4 mt-4">
+                            <p class="fw-semibold fs-5">
+                                {{ runtime }} min
+                            </p>
+                            <p class="fw-semibold fs-5">
+                                {{release_date|slice:":4" }}
+                            </p>
+                            <p class="fw-semibold fs-5">
+                                {{ rating }} <span class="badge bg-warning text-dark fs-6">IMDb</span>
+                            </p>
+
+                        </div>
+
+
+                        <h5 class="mt-md-5 mt-4 text-uppercase text-white-50">Genres</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for genre in genres %}
+                            <h5 class="rounded-pill bg-dark opacity-75 px-3 py-1 m-0  ">{{ genre }}</h5>
+                            {% endfor %}
+                        </div>
+
+                        <h5 class="mt-md-5 mt-4 text-uppercase text-white-50">Director</h5>
+                        <div class="d-flex flex-wrap ">
+                            <h5 class="rounded-pill bg-dark opacity-75 px-3 py-1  ">{{ director }}</h5>
+                        </div>
+
+
+
+                        <h5 class="mt-md-5 mt-4 text-uppercase text-white-50">Cast</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for actor in cast %}
+                            <h5 class="rounded-pill bg-dark opacity-75 px-3 py-1   ">{{ actor }}</h5>
+                            {% endfor %}
+                        </div>
+
+                        <h5 class="mt-md-5 mt-4 text-uppercase text-white-50">Summary</h5>
+                        <p class="  lead ">{{ summary }}</p>
+
+                        <div class="d-flex gap-3 mt-md-5 mt-4 pt-3">
+                            <form action="{% url 'wishlist' id=movie_id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="title" value="{{ title }}">
+                                <input type="hidden" name="poster_path" value="{{ poster_image }}">
+
+                                {% if user.username%}
+                                {% if movie_in_wishlist %}
+                                <button class="rounded-pill bg-dark opacity-75 text-white border-0 py-2 px-4"
+                                    type="submit">
+                                    <i class="fa-solid fa-bookmark fa-lg text-danger"></i> <span
+                                        class="ms-2 fa-lg">Remove from mylist</span>
+                                </button>
+
+                                {% else %}
+                                <button class="rounded-pill bg-dark opacity-75 text-white border-0 py-2 px-4"
+                                    type="submit">
+                                    <i class="fa-solid fa-bookmark fa-lg"></i> <span class="ms-2 fa-lg">Add to
+                                        mylist</span>
+                                </button>
+                                {% endif %}
+                                {% endif %}
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- right side -->
+                <div class="col-md-5 my-auto ms-auto pt-md-5" style="max-width: 700px">
+
+                    <div class="d-flex align-items-center ">
+                        <h5 class="text-white mb-0 me-3">{{count}} Comments</h5>
+                        <form method="GET" action="">
+                            <div>
+                                <select name="filter" class="form-select bg-dark text-white rounded-pill"
+                                    aria-label="Filter" onchange="this.form.submit()">
+                                    <option value="" disabled selected> Sort</option>
+                                    <option value="date">By Date</option>
+                                    <option value="rating">By Rating</option>
+                                </select>
+                            </div>
+                        </form>
+                        
+
+
+                    </div>
+
+                    {% if user.username and not user_review %}
+                    <form method="post" action="{% if form.instance.pk %}{% url 'update_review' movie_id=movie_id %}{% else %}{% url 'add_review' movie_id=movie_id %}{% endif %}" class="mt-5">
+                        {% csrf_token %}
+
+                        <div>
+                            <input type="hidden" name="title" value="{{ title }}">
+                            <input type="hidden" name="poster_path" value="{{ poster_image }}">
+
+                            <div class="d-flex align-items-center my-3">
+                                <div class="me-3">
+                                    <i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                {{ form.comment }}
+                                <select name="rating"
+                                    class="form-select bg-transparent text-white rounded-0 border-0 border-bottom  w-25 me-3"
+                                    required>
+                                    <option value="" disabled selected> Rating</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+
+
+                            <div class="d-flex  justify-content-center">
+                                <button type="submit" class="btn btn-outline-light w-50 rounded-pill">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+
+
+
+
+                    <div class="my-4 px-3 overflow-y-auto" style="height: 70vh;">
+                        <div class="list-group">
+                            {% if user_review %}
+                            <div class="d-flex my-3">
+                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <h6 class="mb-1 text-white fs-5">
+                                        @{{ user_review.user.username }}
+                                        <span class="fw-lighter fst-italic fs-6"> {{ user_review.created_at|date:"F d,Y" }}</span>
+                                    </h6>
+
+                                    <p class="text-light mb-1">{{ user_review.comment }}</p>
+                                    <div class="d-flex align-items-center gap-3 text-primary">
+                                        {% for _ in user_review.solid %}
+                                        <i class="fa-solid fa-star text-warning"></i>
+                                        {% endfor %}
+
+                                        {% for _ in user_review.regular %}
+                                        <i class="fa-regular fa-star text-warning"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="ms-auto d-flex gap-4">
+                                    <a href="{% url 'update_review' movie_id=movie_id  %}"><i
+                                            class="fa-solid fa-pen text-white"></i></a>
+                                    <a href="{% url 'delete_review' movie_id=movie_id %}"><i
+                                            class="fa-solid fa-trash text-white"></i></a>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if reviews %}
+                            {% for review in reviews %}
+                            <div>
+                                <div class="d-flex my-3">
+                                    <div class="me-3"><i
+                                            class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                    </div>
+                                    <div class="d-flex flex-column gap-2">
+                                        <h6 class="mb-1 text-white fs-5">@{{ review.user.username }} <span
+                                                class="fw-lighter fst-italic fs-6">{{ review.created_at|date:"F d,Y"}}</span></h6>
+                                        <p class="text-light mb-1">{{ review.comment }}</p>
+                                        <div class="d-flex align-items-center gap-3 text-primary">
+
+                                            {% for _ in review.solid %}
+                                            <i class="fa-solid fa-star text-warning"></i>
+                                            {% endfor %}
+
+                                            {% for _ in review.regular %}
+                                            <i class="fa-regular fa-star text-warning"></i>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            <div class="d-flex my-3">
+                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <h6 class="mb-1 text-white fs-5">@movielover99 <span
+                                            class="fw-lighter fst-italic fs-6">Oct 02,2024</span></h6>
+                                    <p class="text-light mb-1">Absolutely stunning cinemat loography! Every frame felt
+                                        like
+                                        a
+                                        painting.</p>
+                                    <div class="d-flex align-items-center gap-3 text-warning">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex my-3">
+                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <h6 class="mb-1 text-white fs-5">@cinema_buff <span
+                                            class="fw-lighter fst-italic fs-6">May 01,2024</span></h6>
+                                    <p class="text-light mb-1">The plot twists had me on the edge of my seat. A
+                                        must-watch
+                                        thriller!</p>
+                                    <div class="d-flex align-items-center gap-3 text-warning">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex my-3">
+                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <h6 class="mb-1 text-white fs-5">@reelcritic <span
+                                            class="fw-lighter fst-italic fs-6">Dec 12,2023</span></h6>
+                                    <p class="text-light mb-1">Great performances, but the pacing felt a bit slow in the
+                                        middle.</p>
+                                    <div class="d-flex align-items-center gap-3 text-warning">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex my-3">
+                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <h6 class="mb-1 text-white fs-5">@actionfanatic <span
+                                            class="fw-lighter fst-italic fs-6">Oct 11,2023</span></h6>
+                                    <p class="text-light mb-1">Explosive action sequences and a thrilling climax! Loved
+                                        it!
+                                    </p>
+                                    <div class="d-flex align-items-center gap-3 text-warning">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex my-3">
+                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <h6 class="mb-1 text-white fs-5">@horrorjunkie <span
+                                            class="fw-lighter fst-italic fs-6">Feb 10,2023</span></h6>
+                                    <p class="text-light mb-1">This movie gave me chills! The suspense was perfectly
+                                        crafted.</p>
+                                    <div class="d-flex align-items-center gap-3 text-warning">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex my-3">
+                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <h6 class="mb-1 text-white fs-5">@scifigeek <span
+                                            class="fw-lighter fst-italic fs-6">May 09,2023</span></h6>
+                                    <p class="text-light mb-1">Incredible world-building! The CGI was absolutely
+                                        breathtaking.</p>
+                                    <div class="d-flex align-items-center gap-3 text-warning">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex my-3">
+                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <h6 class="mb-1 text-white fs-5">@classicbuff <span
+                                            class="fw-lighter fst-italic fs-6">Oct 08,2023</span></h6>
+                                    <p class="text-light mb-1">A beautiful homage to classic cinema. Loved the
+                                        storytelling.
+                                    </p>
+                                    <div class="d-flex align-items-center gap-3 text-warning">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                        <i class="fa-regular fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex my-3">
+                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <h6 class="mb-1 text-white fs-5">@romancemoviefan <span
+                                            class="fw-lighter fst-italic fs-6">Sept 07,2023</span></h6>
+                                    <p class="text-light mb-1">The chemistry between the leads was heartwarming. Such a
+                                        beautiful love story.</p>
+                                    <div class="d-flex align-items-center gap-3 text-warning">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+
+</html>
