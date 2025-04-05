@@ -19,9 +19,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('user', include('user_app.urls')),  # Routes user-related URLs (register, login, logout)
-    path('', include('movies.urls')),  # Routes movie-related URLs
-    path('reviews/', include('review.urls')),  # Include review URLs
+    path('user', include('user_app.urls')),  
+    path('', include('movies.urls')),
+    path('reviews/', include('review.urls')),
 
 ]
 

@@ -1,0 +1,33 @@
+{% extends 'user_app/base.html' %}
+
+{% block title %}Forget{% endblock %}
+
+{% block content %}
+<div class="card text-white p-4 rounded-4 shadow-lg mx-auto my-5" style="max-width: 500px; width: 90%;">
+    <h2 class="text-center fw-bold">Forgot Password</h2>
+
+    <p class="fw-lighter text-danger text-center">{{ message }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Username Field -->
+        <div class="mb-lg-5 mb-3">
+            <label for="{{ form.username.id_for_label }}" class="form-label fs-5 mb-lg-3 mt-lg-3">Username</label>
+            {{ form.username }}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-info w-100 mt-3 p-2 rounded-3 fw-bold">Send OTP</button>
+        </div>
+    </form>
+
+    <!-- Links -->
+    <div class="text-center mt-lg-5 mt-3">
+        <hr>
+        <p>Don't have an account? <a href="{% url 'register' %}" class="text-info">Register</a></p>
+    </div>
+</div>
+
+{% endblock %}

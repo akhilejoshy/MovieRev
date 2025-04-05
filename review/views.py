@@ -3,7 +3,6 @@ import requests
 from django.views import View
 from .models import Review,Wishlist
 from .forms import ReviewForm
-from user_app.forms import User_form,Loginform
 
 
 
@@ -37,6 +36,7 @@ class AddReview(View):
 class UpdateReview(View):
     def get(self, request, movie_id):
 
+        # Get Movie Details
         movie_url = f"{BASE_URL}/movie/{movie_id}?api_key={API_KEY}&append_to_response=credits,videos"
         try:
             response = requests.get(movie_url) 
@@ -46,10 +46,22 @@ class UpdateReview(View):
             return self.get(request, movie_id) 
         movie = response.json()
 
+        # Get TMDB Reviews
+        reviews_url = f"{BASE_URL}/movie/{movie_id}/reviews?api_key={API_KEY}"
+        try:
+            reviews_response = requests.get(reviews_url)
+            reviews_response.raise_for_status()
+            tmdb_reviews = reviews_response.json().get("results", [])
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching TMDB reviews: {e}")
+            return self.get(request, movie_id)
+
         rev=Review.objects.get(user=request.user,movie_id=movie_id)
         form = ReviewForm(instance=rev)
         
-        count=8
+        count=0
+
+        # Check for User Review
         if request.user.is_authenticated:
             user_review = Review.objects.filter(user=request.user, movie_id=movie_id).first() 
             if user_review:
@@ -59,18 +71,45 @@ class UpdateReview(View):
         else:
             user_review = None
 
+        # Fetch and Format Reviews from DB
         reviews = Review.objects.filter(movie_id=movie_id)
-        if request.user.is_authenticated:
-            reviews = reviews.exclude(user=request.user) 
-        reviews = reviews.order_by('-created_at')       
+        rating=((sum(review.rating for review in reviews)*2)/(sum(1 for review in reviews) if reviews else 1))
 
+ 
+        new_reviews = []
         for review in reviews:
-           
+            new_reviews.append({
+                "author": review.user.username,
+                "rating": review.rating,
+                "content": review.comment,
+                "date": review.created_at.strftime("%Y-%m-%d"),
+                'solid':range(review.rating),
+                'regular': range(5 - review.rating)
+            })
+            count += 1
 
-           review.solid = range(review.rating) 
-           review.regular = range(5 - review.rating)  
-           count+=1
-        
+        # Format TMDB Reviews        
+        for tmdb_review in tmdb_reviews:
+            tmdb_rating=tmdb_review.get("author_details", {}).get("rating")
+            if tmdb_rating: 
+                new_reviews.append({
+                    "author": tmdb_review.get("author", "Anonymous"),
+                    "rating": round(rating/2),
+                    "content": tmdb_review.get("content", "No review content"),
+                    "date": tmdb_review.get("created_at", "Unknown Date").split("T")[0] ,
+                    'solid':range(round(tmdb_rating/2)),
+                    'regular': range(5 - round(tmdb_rating/2))
+                })
+                count += 1
+
+        # Sort Reviews
+        filter_option = request.GET.get('filter')
+        if filter_option == "date":
+            new_reviews.sort(key=lambda x: x["date"], reverse=True)
+        elif filter_option == "rating":
+            new_reviews.sort(key=lambda x: x["rating"], reverse=True)
+             
+        # Wishlist Check
         movie_in_wishlist = Wishlist.objects.filter(user=request.user, movie_id=movie_id).exists() if request.user.is_authenticated else False
 
         context = {
@@ -79,14 +118,14 @@ class UpdateReview(View):
             "title": movie.get("title", "N/A"),
             "runtime": movie.get("runtime", "N/A"),
             "release_date": movie.get("release_date", "N/A"),
-            "rating": movie.get("vote_average", "N/A"),
+            "rating": (round((rating + movie.get("vote_average", "N/A"))/(2 if rating else 1),1)),
             "cover_image": f"https://image.tmdb.org/t/p/original{movie.get('backdrop_path')}" if movie.get("backdrop_path") else None,
             "poster_image": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}" if movie.get("poster_path") else None,
             "genres": [genre["name"] for genre in movie.get("genres", [])],
             "director": next((crew["name"] for crew in movie.get("credits", {}).get("crew", []) if crew["job"] == "Director"), "N/A"),
             "cast": [actor["name"] for actor in movie.get("credits", {}).get("cast", [])[:3]],
             "summary": movie.get("overview", "No summary available."),
-            "reviews": reviews,
+            "reviews": new_reviews,
             "count":count,
             "movie_in_wishlist": movie_in_wishlist
 

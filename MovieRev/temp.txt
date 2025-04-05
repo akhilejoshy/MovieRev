@@ -167,3 +167,6 @@ class Wishlist(models.Model):
         </div>
     </div>
 </div>
+
+
+    <!-- <a href="{% url 'movie_detail' movie_id=review.movie_id %}" class="text-decoration-none   "> -->

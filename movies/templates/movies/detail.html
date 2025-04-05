@@ -1,23 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'movies/base.html' %}
+{% block title %}Movie Details{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-
-
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% block style %}
     <style>
         * {
             /* border: 1px solid red; */
@@ -34,7 +18,9 @@
 
 
 
-
+        .navbar{
+            background-color: transparent  !important;
+        }
         .overlay {
 
 
@@ -52,86 +38,9 @@
             color: white;
         }
     </style>
-</head>
+    {% endblock %}
 
-<body class="text-white ">
-    <nav class="navbar bg-transparent navbar-dark bg-dark fixed-top py-2">
-        <div class="container-fluid mx-2">
-            <a class="navbar-brand fw-bold fs-2" href="{% url 'trending_movies' %}"><i
-                    class="fa-solid fa-film me-2"></i>MovieRev</a>
-
-            <div class="dropdown ms-auto d-flex align-items-center gap-3">
-                <a href="{% url 'search_movies'  %}" class="btn text-white fs-4 rounded-pill">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </a>
-
-                <button class="btn text-white fs-3" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasRight" aria-expanded="false">
-                    <i class="fa-solid fa-user"></i>
-                </button>
-
-                <div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasRight"
-                    aria-labelledby="offcanvasRightLabel">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasRightLabel">MovieRev</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body">
-                        {% if user.username%}
-                        <div>
-                            <div class="d-flex flex-column h-100 justify-content-between">
-                                <div class="d-grid gap-3 px-3">
-
-                                    <a href="" class="btn btn-dark text-start p-3 " data-bs-toggle="collapse"
-                                        data-bs-target="#profile"><i
-                                            class="fa-solid fa-user-circle me-2"></i>Profile</a>
-                                    <div class="collapse mt-2 " id="profile">
-                                        <div class="p-3">
-                                            <h2 class="text-info mb-4">Profile Details</h2>
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item bg-dark text-white"><strong>First
-                                                        Name:</strong> {{ user.first_name }}</li>
-                                                <li class="list-group-item bg-dark text-white"><strong>Last
-                                                        Name:</strong> {{ user.last_name }}</li>
-                                                <li class="list-group-item bg-dark text-white">
-                                                    <strong>Email:</strong> {{ user.email }}
-                                                </li>
-                                                <li class="list-group-item bg-dark text-white">
-                                                    <strong>Joined:</strong> {{ user.date_joined|date:"F d, Y" }}
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <a class="btn btn-dark text-start p-3" href="{% url 'saved_reviews' %}"><i
-                                            class="fa-solid fa-bookmark me-2"></i> MyList</a>
-                                    <a class="btn btn-dark text-start p-3" href="{% url 'user_reviews' %}"><i
-                                            class="fa-solid fa-pen-to-square me-2"></i> Review's</a>
-                                    <a class="btn btn-dark text-start p-3" href="{% url 'logout' %}"><i
-                                            class="fa-solid fa-sign-out me-2"></i> Logout</a>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div>
-                                <div class="d-flex flex-column h-100 justify-content-between">
-                                    <div class="d-grid gap-3 px-3">
-
-
-                                        <a class="btn btn-dark text-start p-3" href="{% url 'login' %}"><i
-                                                class="fa-solid fa-sign-in me-2"></i> login</a>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-    </nav>
-
-
+    {% block content %}
     <div class="overlay ">
         <div class="container-fluid  ">
             <div class="row min-vh-100    ">
@@ -221,13 +130,15 @@
                                 </select>
                             </div>
                         </form>
-                        
+
 
 
                     </div>
 
                     {% if user.username and not user_review %}
-                    <form method="post" action="{% if form.instance.pk %}{% url 'update_review' movie_id=movie_id %}{% else %}{% url 'add_review' movie_id=movie_id %}{% endif %}" class="mt-5">
+                    <form method="post"
+                        action="{% if form.instance.pk %}{% url 'update_review' movie_id=movie_id %}{% else %}{% url 'add_review' movie_id=movie_id %}{% endif %}"
+                        class="mt-5">
                         {% csrf_token %}
 
                         <div>
@@ -271,7 +182,7 @@
                                 <div class="d-flex flex-column gap-2">
                                     <h6 class="mb-1 text-white fs-5">
                                         @{{ user_review.user.username }}
-                                        <span class="fw-lighter fst-italic fs-6"> {{ user_review.created_at|date:"F d,Y" }}</span>
+                                        <span class="fw-lighter fst-italic fs-6"> {{ user_review.created_at|date:"F d,Y"}}</span>
                                     </h6>
 
                                     <p class="text-light mb-1">{{ user_review.comment }}</p>
@@ -296,15 +207,16 @@
 
                             {% if reviews %}
                             {% for review in reviews %}
+                            {% if not review.author == request.user.username %}
                             <div>
                                 <div class="d-flex my-3">
                                     <div class="me-3"><i
                                             class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
                                     </div>
                                     <div class="d-flex flex-column gap-2">
-                                        <h6 class="mb-1 text-white fs-5">@{{ review.user.username }} <span
-                                                class="fw-lighter fst-italic fs-6">{{ review.created_at|date:"F d,Y"}}</span></h6>
-                                        <p class="text-light mb-1">{{ review.comment }}</p>
+                                        <h6 class="mb-1 text-white fs-5">@{{ review.author }} <span
+                                                class="fw-lighter fst-italic fs-6">{{ review.date}}</span></h6>
+                                        <p class="text-light mb-1">{{ review.content }}</p>
                                         <div class="d-flex align-items-center gap-3 text-primary">
 
                                             {% for _ in review.solid %}
@@ -317,158 +229,16 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                            {% else %}
+                            <div class=" d-flex justify-content-center">
+                                <p>No Comments</p>
                             </div>
                             {% endif %}
 
-                            <div class="d-flex my-3">
-                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                                </div>
-                                <div class="d-flex flex-column gap-2">
-                                    <h6 class="mb-1 text-white fs-5">@movielover99 <span
-                                            class="fw-lighter fst-italic fs-6">Oct 02,2024</span></h6>
-                                    <p class="text-light mb-1">Absolutely stunning cinemat loography! Every frame felt
-                                        like
-                                        a
-                                        painting.</p>
-                                    <div class="d-flex align-items-center gap-3 text-warning">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="d-flex my-3">
-                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                                </div>
-                                <div class="d-flex flex-column gap-2">
-                                    <h6 class="mb-1 text-white fs-5">@cinema_buff <span
-                                            class="fw-lighter fst-italic fs-6">May 01,2024</span></h6>
-                                    <p class="text-light mb-1">The plot twists had me on the edge of my seat. A
-                                        must-watch
-                                        thriller!</p>
-                                    <div class="d-flex align-items-center gap-3 text-warning">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex my-3">
-                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                                </div>
-                                <div class="d-flex flex-column gap-2">
-                                    <h6 class="mb-1 text-white fs-5">@reelcritic <span
-                                            class="fw-lighter fst-italic fs-6">Dec 12,2023</span></h6>
-                                    <p class="text-light mb-1">Great performances, but the pacing felt a bit slow in the
-                                        middle.</p>
-                                    <div class="d-flex align-items-center gap-3 text-warning">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex my-3">
-                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                                </div>
-                                <div class="d-flex flex-column gap-2">
-                                    <h6 class="mb-1 text-white fs-5">@actionfanatic <span
-                                            class="fw-lighter fst-italic fs-6">Oct 11,2023</span></h6>
-                                    <p class="text-light mb-1">Explosive action sequences and a thrilling climax! Loved
-                                        it!
-                                    </p>
-                                    <div class="d-flex align-items-center gap-3 text-warning">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex my-3">
-                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                                </div>
-                                <div class="d-flex flex-column gap-2">
-                                    <h6 class="mb-1 text-white fs-5">@horrorjunkie <span
-                                            class="fw-lighter fst-italic fs-6">Feb 10,2023</span></h6>
-                                    <p class="text-light mb-1">This movie gave me chills! The suspense was perfectly
-                                        crafted.</p>
-                                    <div class="d-flex align-items-center gap-3 text-warning">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex my-3">
-                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                                </div>
-                                <div class="d-flex flex-column gap-2">
-                                    <h6 class="mb-1 text-white fs-5">@scifigeek <span
-                                            class="fw-lighter fst-italic fs-6">May 09,2023</span></h6>
-                                    <p class="text-light mb-1">Incredible world-building! The CGI was absolutely
-                                        breathtaking.</p>
-                                    <div class="d-flex align-items-center gap-3 text-warning">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex my-3">
-                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                                </div>
-                                <div class="d-flex flex-column gap-2">
-                                    <h6 class="mb-1 text-white fs-5">@classicbuff <span
-                                            class="fw-lighter fst-italic fs-6">Oct 08,2023</span></h6>
-                                    <p class="text-light mb-1">A beautiful homage to classic cinema. Loved the
-                                        storytelling.
-                                    </p>
-                                    <div class="d-flex align-items-center gap-3 text-warning">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex my-3">
-                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                                </div>
-                                <div class="d-flex flex-column gap-2">
-                                    <h6 class="mb-1 text-white fs-5">@romancemoviefan <span
-                                            class="fw-lighter fst-italic fs-6">Sept 07,2023</span></h6>
-                                    <p class="text-light mb-1">The chemistry between the leads was heartwarming. Such a
-                                        beautiful love story.</p>
-                                    <div class="d-flex align-items-center gap-3 text-warning">
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                        <i class="fa-solid fa-star"></i>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                     </div>
@@ -477,8 +247,4 @@
         </div>
 
     </div>
-
-</body>
-
-
-</html>
+    {% endblock %}
