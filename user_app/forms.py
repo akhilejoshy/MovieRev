@@ -18,7 +18,7 @@ class Loginform(forms.Form):
 
  
 class Userverificationform(forms.Form):
-    otp=forms.CharField(max_length=4,widget=forms.TextInput(attrs={'class':'form-control bg-secondary text-white border-0 py-2   ','placeholder':'enter username'}))
+    otp=forms.CharField(max_length=4,widget=forms.TextInput(attrs={'class':'form-control bg-secondary text-white border-0 py-2   ','placeholder':'enter otp'}))
 
 
 class ForgetPasswordform(forms.Form):
