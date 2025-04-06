@@ -32,7 +32,7 @@
         {% if movies %}
         {% for movie in movies %}
         {% if movie.poster_path %}
-        <div class="col-md-4 col-lg-3 col-xl-2 mb-4">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
             <div class="card bg-black text-white border-0">
                 <a href="{% url 'movie_detail' movie.id %}" class="text-decoration-none">
                     <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="card-img-top"
