@@ -163,3 +163,5 @@ EMAIL_HOST_PASSWORD = 'vyet eejv fbdp itvf'
 
 DEBUG = False  # for production
 ALLOWED_HOSTS = ['*']
+
+X_FRAME_OPTIONS = 'ALLOWALL'
