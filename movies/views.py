@@ -151,13 +151,14 @@ class MovieDetail(View):
             if tmdb_rating:
                 new_reviews.append({
                     "author": tmdb_review.get("author", "Anonymous"),
-                    "rating": round(rating / 2),
+                    "rating": round(tmdb_rating / 2),
                     "content": tmdb_review.get("content", "No review content"),
                     "date": tmdb_review.get("created_at", "Unknown Date").split("T")[0],
                     "solid": range(round(tmdb_rating / 2)),
                     "regular": range(5 - round(tmdb_rating / 2))
                 })
                 count += 1
+        
 
         # Sort Reviews
         filter_option = request.GET.get('filter')
@@ -165,6 +166,7 @@ class MovieDetail(View):
             new_reviews.sort(key=lambda x: x["date"], reverse=True)
         elif filter_option == "rating":
             new_reviews.sort(key=lambda x: x["rating"], reverse=True)
+            
 
         # Wishlist Check
         movie_in_wishlist = Wishlist.objects.filter(user=request.user, movie_id=movie_id).exists() if request.user.is_authenticated else False

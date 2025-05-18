@@ -4,7 +4,6 @@
 {% block style %}
 <style>
     * {
-        /* border: 1px solid red; */
         scrollbar-color: #2e2e2e #22222200;
     }
 
@@ -12,22 +11,15 @@
         background: url("{% if cover_image %}{{ cover_image }}{% elif poster_image %}{{ poster_image }}{% endif %}") no-repeat center center fixed;
         background-size: cover;
         position: relative;
-        /* overflow: hidden; */
-
     }
-
-
 
     .navbar {
         background-color: transparent !important;
     }
 
     .overlay {
-
-
         background: rgba(0, 0, 0, 0.568);
     }
-
 
     .form-select {
         background-color: transparent !important;
@@ -40,174 +32,161 @@
     }
 
     .responsive-text {
-    font-size: 0.85rem; /* Smaller text on mobile */
-  }
-
-  @media (min-width: 768px) {
-    .responsive-text {
-      font-size: 1rem; /* Normal text on md and above */
+        font-size: 0.95rem;
     }
-  }
+
+    @media (max-width: 767.98px) {
+        .movie-title {
+            font-size: 2rem;
+        }
+
+        .responsive-text p,
+        .responsive-text h5 {
+            font-size: 0.85rem;
+        }
+
+        .left-content {
+            padding-bottom: 2rem;
+        }
+
+        .right-content {
+            padding-top: 1rem;
+        }
+    }
+
+    .navbar {
+        transition: background-color 0.3s ease;
+    }
+
+    .navbar.scrolled {
+        background-color: rgba(0, 0, 0, 0.85) !important;
+        /* dark transparent */
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="overlay ">
-    <div class="container-fluid  ">
-        <div class="row min-vh-100    ">
-            <!-- lef side -->
-            <div class="col-md-7  d-flex align-items-center ps-md-5 px-4 py-5 left-content">
-                <div class="responsive-text" style="max-width: 700px;">
-                    <h1 class="fw-bold display-4 ">{{ title }}</h1>
-                    <div class="d-flex gap-4 mt-4">
-                        <p class="fw-semibold fs-5">
-                            {{ runtime }} min
-                        </p>
-                        <p class="fw-semibold fs-5">
-                            {{release_date|slice:":4" }}
-                        </p>
-                        <p class="fw-semibold fs-5">
-                            {{ rating }} <span class="badge bg-warning text-dark fs-6">IMDb</span>
-                        </p>
-
+<div class="overlay">
+    <div class="container-fluid ">
+        <div class="row min-vh-100">
+            <!-- Movie Details -->
+            <div class="col-12 col-md-7 d-flex align-items-center ps-md-5 px-4 py-5 left-content">
+                <div class="responsive-text w-100 d-flex flex-column gap-1" style="max-width: 700px;">
+                    <h1 class="fw-bold display-4 movie-title">{{ title }}</h1>
+                    <div class="d-flex gap-4 mt-4 flex-wrap">
+                        <p class="fw-semibold fs-5">{{ runtime }} min</p>
+                        <p class="fw-semibold fs-5">{{ release_date|slice:":4" }}</p>
+                        <p class="fw-semibold fs-5">{{ rating }} <span
+                                class="badge bg-warning text-dark fs-6">IMDb</span></p>
                     </div>
 
-
-                    <h5 class="mt-md-5 mt-4 text-uppercase text-white-50">Genres</h5>
+                    <h5 class="mt-4 text-uppercase text-white-50">Genres</h5>
                     <div class="d-flex flex-wrap gap-2">
                         {% for genre in genres %}
-                        <h5 class="rounded-pill bg-dark opacity-75 px-3 py-1 m-0  ">{{ genre }}</h5>
+                        <h5 class="rounded-pill bg-dark opacity-75 px-3 py-1 m-0">{{ genre }}</h5>
                         {% endfor %}
                     </div>
 
-                    <h5 class="mt-md-5 mt-4 text-uppercase text-white-50">Director</h5>
-                    <div class="d-flex flex-wrap ">
-                        <h5 class="rounded-pill bg-dark opacity-75 px-3 py-1  ">{{ director }}</h5>
+                    <h5 class="mt-4 text-uppercase text-white-50">Director</h5>
+                    <div class="d-flex">
+                        <h5 class="rounded-pill bg-dark opacity-75 px-3 py-1">{{ director }}</h5>
                     </div>
 
-
-
-                    <h5 class="mt-md-5 mt-4 text-uppercase text-white-50">Cast</h5>
+                    <h5 class="mt-4 text-uppercase text-white-50">Cast</h5>
                     <div class="d-flex flex-wrap gap-2">
                         {% for actor in cast %}
-                        <h5 class="rounded-pill bg-dark opacity-75 px-3 py-1   ">{{ actor }}</h5>
+                        <h5 class="rounded-pill bg-dark opacity-75 px-3 py-1">{{ actor }}</h5>
                         {% endfor %}
                     </div>
 
-                    <h5 class="mt-md-5 mt-4 text-uppercase text-white-50">Summary</h5>
-                    <p class="  lead ">{{ summary }}</p>
+                    <h5 class="mt-4 text-uppercase text-white-50">Summary</h5>
+                    <p class="lead">{{ summary }}</p>
 
-                    <div class="d-flex gap-3 mt-md-5 mt-4 pt-3">
+                    {% if user.username %}
+                    <div class="d-flex responsive-text gap-3 mt-4 pt-3">
                         <form action="{% url 'wishlist' id=movie_id %}" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="title" value="{{ title }}">
                             <input type="hidden" name="poster_path" value="{{ poster_image }}">
-
-                            {% if user.username%}
                             {% if movie_in_wishlist %}
                             <button class="rounded-pill bg-dark opacity-75 text-white border-0 py-2 px-4" type="submit">
-                                <i class="fa-solid fa-bookmark fa-lg text-danger"></i> <span class="ms-2 fa-lg">Remove
-                                    from mylist</span>
+                                <i class="fa-solid fa-bookmark fa-lg text-danger"></i>
+                                <span class="ms-2 fa-lg">Remove from mylist</span>
                             </button>
-
                             {% else %}
                             <button class="rounded-pill bg-dark opacity-75 text-white border-0 py-2 px-4" type="submit">
-                                <i class="fa-solid fa-bookmark fa-lg"></i> <span class="ms-2 fa-lg">Add to
-                                    mylist</span>
+                                <i class="fa-solid fa-bookmark fa-lg"></i>
+                                <span class="ms-2 fa-lg">Add to mylist</span>
                             </button>
                             {% endif %}
-                            {% endif %}
                         </form>
-
                     </div>
+                    {% endif %}
                 </div>
             </div>
 
-
-            <!-- right side -->
-            <div class="col-md-5 my-auto ms-auto pt-md-5" style="max-width: 700px">
-
-                <div class="d-flex align-items-center ">
-                    <h5 class="text-white mb-0 me-3">{{count}} Comments</h5>
+            <!-- Comments Section -->
+            <div class="col-12 col-md-5 my-auto ms-auto px-4 pt-md-5 right-content" style="max-width: 700px;">
+                <div class="d-flex align-items-center">
+                    <h5 class="text-white mb-0 me-3">{{ count }} Comments</h5>
                     <form method="GET" action="">
-                        <div>
-                            <select name="filter" class="form-select bg-dark text-white rounded-pill"
-                                aria-label="Filter" onchange="this.form.submit()">
-                                <option value="" disabled selected> Sort</option>
-                                <option value="date">By Date</option>
-                                <option value="rating">By Rating</option>
-                            </select>
-                        </div>
+                        <select name="filter" class="form-select bg-dark text-white rounded-pill"
+                            onchange="this.form.submit()">
+                            <option value="" disabled selected>Sort</option>
+                            <option value="date">By Date</option>
+                            <option value="rating">By Rating</option>
+                        </select>
                     </form>
-
-
-
                 </div>
 
                 {% if user.username and not user_review %}
                 <form method="post"
                     action="{% if form.instance.pk %}{% url 'update_review' movie_id=movie_id %}{% else %}{% url 'add_review' movie_id=movie_id %}{% endif %}"
-                    class="mt-5">
+                    class="mt-4">
                     {% csrf_token %}
-
-                    <div>
-                        <input type="hidden" name="title" value="{{ title }}">
-                        <input type="hidden" name="poster_path" value="{{ poster_image }}">
-
-                        <div class="d-flex align-items-center my-3">
-                            <div class="me-3">
-                                <i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                            </div>
-                            {{ form.comment }}
-                            <select name="rating"
-                                class="form-select bg-transparent text-white rounded-0 border-0 border-bottom  w-25 me-3"
-                                required>
-                                <option value="" disabled selected> Rating</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
-                        </div>
-
-
-                        <div class="d-flex  justify-content-center">
-                            <button type="submit" class="btn btn-outline-light w-50 rounded-pill">Submit</button>
-                        </div>
+                    <input type="hidden" name="title" value="{{ title }}">
+                    <input type="hidden" name="poster_path" value="{{ poster_image }}">
+                    <div class="d-flex align-items-center my-3">
+                        <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i></div>
+                        {{ form.comment }}
+                        <select name="rating"
+                            class="form-select bg-transparent text-white rounded-0 border-0 border-bottom w-25 me-3"
+                            required>
+                            <option value="" disabled selected>Rating</option>
+                            {% for i in "12345" %}
+                            <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-outline-light w-50 rounded-pill">Submit</button>
                     </div>
                 </form>
                 {% endif %}
 
-
-
-
-                <div class="my-4 px-3 overflow-y-auto" style="height: 70vh;">
+                <div class="my-4 overflow-y-auto px-2" style="max-height: 70vh;">
                     <div class="list-group">
                         {% if user_review %}
                         <div class="d-flex my-3">
-                            <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                            </div>
+                            <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i></div>
                             <div class="d-flex flex-column gap-2">
                                 <h6 class="mb-1 text-white fs-5">
                                     @{{ user_review.user.username }}
-                                    <span class="fw-lighter fst-italic fs-6"> {{ user_review.created_at|date:"F
-                                        d,Y"}}</span>
+                                    <span class="fw-lighter fst-italic fs-6">{{ user_review.created_at|date:"Y-m-d"
+                                        }}</span>
                                 </h6>
-
                                 <p class="text-light mb-1">{{ user_review.comment }}</p>
-                                <div class="d-flex align-items-center gap-3 text-primary">
+                                <div class="d-flex gap-2">
                                     {% for _ in user_review.solid %}
                                     <i class="fa-solid fa-star text-warning"></i>
                                     {% endfor %}
-
                                     {% for _ in user_review.regular %}
                                     <i class="fa-regular fa-star text-warning"></i>
                                     {% endfor %}
                                 </div>
                             </div>
-                            <div class="ms-auto d-flex gap-4">
-                                <a href="{% url 'update_review' movie_id=movie_id  %}"><i
+                            <div class="ms-auto d-flex gap-3">
+                                <a href="{% url 'update_review' movie_id=movie_id %}"><i
                                         class="fa-solid fa-pen text-white"></i></a>
                                 <a href="{% url 'delete_review' movie_id=movie_id %}"><i
                                         class="fa-solid fa-trash text-white"></i></a>
@@ -215,45 +194,44 @@
                         </div>
                         {% endif %}
 
-                        {% if reviews %}
                         {% for review in reviews %}
-                        {% if not review.author == request.user.username %}
-                        <div>
-                            <div class="d-flex my-3">
-                                <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i>
-                                </div>
-                                <div class="d-flex flex-column gap-2">
-                                    <h6 class="mb-1 text-white fs-5">@{{ review.author }} <span
-                                            class="fw-lighter fst-italic fs-6">{{ review.date}}</span></h6>
-                                    <p class="text-light mb-1">{{ review.content }}</p>
-                                    <div class="d-flex align-items-center gap-3 text-primary">
-
-                                        {% for _ in review.solid %}
-                                        <i class="fa-solid fa-star text-warning"></i>
-                                        {% endfor %}
-
-                                        {% for _ in review.regular %}
-                                        <i class="fa-regular fa-star text-warning"></i>
-                                        {% endfor %}
-                                    </div>
+                        {% if review.author != request.user.username %}
+                        <div class="d-flex my-3">
+                            <div class="me-3"><i class="fa-solid fa-user rounded-pill bg-light text-dark p-2"></i></div>
+                            <div class="d-flex flex-column gap-2">
+                                <h6 class="mb-1 text-white fs-5">@{{ review.author }}
+                                    <span class="fw-lighter fst-italic fs-6">{{ review.date }}</span>
+                                </h6>
+                                <p class="text-light mb-1">{{ review.content }}</p>
+                                <div class="d-flex gap-2">
+                                    {% for _ in review.solid %}
+                                    <i class="fa-solid fa-star text-warning"></i>
+                                    {% endfor %}
+                                    {% for _ in review.regular %}
+                                    <i class="fa-regular fa-star text-warning"></i>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
                         {% endif %}
+                        {% empty %}
+                        <div class="text-white text-center">No Comments</div>
                         {% endfor %}
-                        {% else %}
-                        <div class=" d-flex justify-content-center">
-                            <p>No Comments</p>
-                        </div>
-                        {% endif %}
-
-
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-
 </div>
+<script>
+  window.addEventListener('scroll', function () {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 0) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+</script>
+
 {% endblock %}

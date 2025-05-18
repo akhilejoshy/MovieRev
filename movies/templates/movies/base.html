@@ -52,10 +52,17 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </a>
 
+                {% if user.username %}
                 <button class="btn text-white fs-3" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasRight" aria-expanded="false">
                     <i class="fa-solid fa-user"></i>
                 </button>
+                {% else %}
+                
+                <a class="btn text-white fs-3" href="{% url 'login' %}">
+                                <i class="fa-solid fa-sign-in me-2"></i> 
+                            </a>
+                {% endif %}
 
                 <div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasRight">
                     <div class="offcanvas-header">
@@ -63,7 +70,7 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
                     </div>
                     <div class="offcanvas-body">
-                        {% if user.username %}
+                        
                         <div class="d-grid gap-3 px-3">
                             <a href="#" class="btn btn-dark text-start p-3" data-bs-toggle="collapse"
                                 data-bs-target="#profile"><i class="fa-solid fa-user-circle me-2"></i>Profile</a>
@@ -88,13 +95,7 @@
                                 <i class="fa-solid fa-sign-out me-2"></i> Logout
                             </a>
                         </div>
-                        {% else %}
-                        <div class="d-grid px-3">
-                            <a class="btn btn-dark text-start p-3" href="{% url 'login' %}">
-                                <i class="fa-solid fa-sign-in me-2"></i> Login
-                            </a>
-                        </div>
-                        {% endif %}
+                        
                     </div>
                 </div>
             </div>
